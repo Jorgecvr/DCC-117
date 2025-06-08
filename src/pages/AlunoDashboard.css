@@ -1,0 +1,146 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9f9;
+}
+
+.container {
+  min-height: 100vh;
+  width: 100vw;
+  padding: 40px 20px; /* padding lateral menor */
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #222;
+  width: 100%;
+}
+
+.profileSection {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 50px;
+  width: 100%;
+  max-width: none; /* remove limite para esticar */
+}
+
+.profileImage {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+}
+
+.info {
+  font-size: 20px;
+  color: #444;
+  line-height: 1.7;
+}
+
+.fichaTreinoSection {
+  background-color: #fff;
+  padding: 25px 30px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+  width: 100%;
+  max-width: none;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.table thead tr {
+  background-color: #1a73e8;
+  color: #fff;
+}
+
+.table th, .table td {
+  padding: 15px 20px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.treinoLinha {
+  cursor: pointer;
+  transition: background-color 0.25s;
+}
+
+.treinoLinha:hover, .treinoLinha:focus {
+  background-color: #e2eafc;
+  outline: none;
+}
+
+.botaoVerFicha {
+  padding: 14px 28px;
+  font-size: 18px;
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.25s;
+}
+
+.botaoVerFicha:hover {
+  background-color: #155ab6;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modalContent {
+  background-color: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+
+.botaoFechar {
+  margin-top: 20px;
+  padding: 12px 26px;
+  font-size: 17px;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  float: right;
+}
+
+.botaoFechar:hover {
+  background-color: #222;
+}
+
+.listaExercicios {
+  list-style: disc inside;
+  font-size: 18px;
+  color: #333;
+  padding-left: 10px;
+  margin-top: 10px;
+}

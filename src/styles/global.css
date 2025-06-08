@@ -1,0 +1,253 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #dfe9f3, #ffffff);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Container do login */
+.login-container {
+  background-color: #fff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-container h1 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.login-container label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.login-container select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.login-container button:hover {
+  background-color: #45a049;
+}
+
+/* Fundo com imagem desfocada */
+.login-background {
+  background-image: url('../assets/login-banner.jpg');
+  background-size: cover;
+  background-position: center;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Camada de desfoque */
+.login-overlay {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.4); /* escurece o fundo */
+  z-index: 1;
+}
+
+/* Card de login */
+.login-card {
+  position: relative;
+  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 40px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.login-card h2 {
+  margin-bottom: 10px;
+  font-size: 24px;
+  color: #333;
+}
+
+.login-card p {
+  margin-bottom: 20px;
+  color: #666;
+}
+
+/* Estilo do formulário */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-form input {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.login-form button {
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Links abaixo do formulário */
+.login-links {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.login-links a {
+  font-size: 14px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.login-links a:hover {
+  text-decoration: underline;
+}
+
+.login-select {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  color: #333;
+  appearance: none;
+}
+
+/* Aluno */
+
+.aluno-container {
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  background: #f4f6f8;
+  padding: 0;
+  margin: 0;
+}
+
+.aluno-header {
+  background-color: #0a192f;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logout-btn {
+  background: #ff4d4d;
+  border: none;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  background: #e60000;
+}
+
+.aluno-content {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.aluno-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.aluno-card h2 {
+  margin-bottom: 20px;
+  color: #0a192f;
+}
+
+.aluno-info p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.aluno-treino h3 {
+  margin-top: 20px;
+  color: #333;
+}
+
+.aluno-treino ul {
+  list-style: disc inside;
+  padding-left: 10px;
+  margin-top: 5px;
+}
+
+.aluno-treino li {
+  margin-bottom: 6px;
+}
