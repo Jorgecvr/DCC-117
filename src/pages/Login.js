@@ -11,8 +11,13 @@ const Login = () => {
     e.preventDefault();
     if (tipoUsuario === 'aluno') {
       navigate('/aluno');
+    } else if( tipoUsuario === 'funcionario') {
+      navigate('/funcionario');
+    }
+      else if (tipoUsuario === 'admin') {
+      navigate('/admin');
     } else {
-      navigate('/AdminDashboard');
+      navigate('/funcionario');
     }
   };
 
