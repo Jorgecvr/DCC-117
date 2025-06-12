@@ -11,8 +11,8 @@ const Login = () => {
     e.preventDefault();
     if (tipoUsuario === 'aluno') {
       navigate('/aluno');
-    } else if( tipoUsuario === 'funcionario') {
-      navigate('/funcionario');
+    } else if( tipoUsuario === 'recepcionista') {
+      navigate('/recepcionista');
     }
       else if (tipoUsuario === 'admin') {
       navigate('/admin');
@@ -35,7 +35,8 @@ const Login = () => {
             className="login-select"
           >
             <option value="aluno">Aluno</option>
-            <option value="funcionario">Funcionário</option>
+            <option value="admin">Admin</option>
+            <option value="recepcionista">Recepcionista</option>
           </select>
 
           <input type="email" placeholder="E-mail (simulado)" disabled />

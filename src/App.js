@@ -13,8 +13,8 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
         <Route path="/aluno" element={<AlunoDashboard />} />
-        {/* <Route path="/funcionario" element={<AdminDashboard />} /> */}
-        <Route path="/funcionario" element={<RecepcionistaDashboard />} />
+        <Route path="/recepcionista" element={<RecepcionistaDashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </Router>
   );
