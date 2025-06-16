@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import AlunoDashboard from './pages/AlunoDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import RecepcionistaDashboard from './pages/RecepcionistaDashboard';
+import ProfessorWorkoutEditor from './pages/ProfessorWorkoutEditor';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/aluno" element={<AlunoDashboard />} />
         <Route path="/recepcionista" element={<RecepcionistaDashboard />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/professor" element={<ProfessorWorkoutEditor />} />
       </Routes>
     </Router>
   );
