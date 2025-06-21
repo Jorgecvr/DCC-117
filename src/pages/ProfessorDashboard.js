@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('funcionarios');
+  const [activeTab, setActiveTab] = useState('alunos');
   
   const funcionarios = [
     {
@@ -117,25 +117,22 @@ const AdminDashboard = () => {
       <div className="admin-sidebar">
         <div className="admin-profile-header">
           <div className="admin-avatar">
-            <span className="admin-icon">👑</span>
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" className="user-photo" />
           </div>
-          <h2 className="admin-name">Administrador</h2>
-          <p className="admin-role">Super Admin</p>
+          <h2 className="admin-name">Professor</h2>
+          <p className="admin-role">Arthur Busquet</p>
         </div>
 
         <nav className="admin-menu">
-          <button 
-            className={`menu-item ${activeTab === 'funcionarios' ? 'active' : ''}`}
-            onClick={() => setActiveTab('funcionarios')}
-          >
-            👥 Funcionários
-          </button>
           <button 
             className={`menu-item ${activeTab === 'alunos' ? 'active' : ''}`}
             onClick={() => setActiveTab('alunos')}
           >
             🏋️ Alunos
           </button>
+          {/* <button className="menu-item">
+            ⚙️ Configurações
+          </button> */}
         </nav>
       </div>
 
@@ -144,9 +141,6 @@ const AdminDashboard = () => {
           <h1 className="admin-title">
             {activeTab === 'funcionarios' ? 'Gerenciamento de Funcionários' : 'Gerenciamento de Alunos'}
           </h1>
-          <button className="add-button" onClick={handleAddNew}>
-            + Adicionar {activeTab === 'funcionarios' ? 'Funcionário' : 'Aluno'}
-          </button>
         </div>
 
         <div className="admin-table-container">
@@ -183,10 +177,10 @@ const AdminDashboard = () => {
                         className="action-button edit"
                         onClick={() => handleEdit(funcionario, 'funcionario')}
                       >
-                        Editar
+                        Ficha de treino
                       </button>
                       <button className="action-button delete">
-                        Remover
+                        Avaliação física
                       </button>
                     </td>
                   </tr>
@@ -226,10 +220,10 @@ const AdminDashboard = () => {
                         className="action-button edit"
                         onClick={() => handleEdit(aluno, 'aluno')}
                       >
-                        Editar
+                        Ficha de treino
                       </button>
                       <button className="action-button delete">
-                        Remover
+                        Avaliação física
                       </button>
                     </td>
                   </tr>

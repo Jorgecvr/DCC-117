@@ -68,7 +68,7 @@ const AlunoDashboard = () => {
         </div>
 
         <div className="stats-container">
-          <h3 className="section-title">📊 Estatísticas</h3>
+          <h3 className="section-title">📊 Avaliação Física</h3>
           <div className="stat-item">
             <span className="stat-label">⚖️ Peso</span>
             <span className="stat-value">{aluno.peso}</span>
@@ -85,9 +85,13 @@ const AlunoDashboard = () => {
             <span className="stat-label">🎯 Objetivo</span>
             <span className="stat-value">{aluno.objetivo}</span>
           </div>
-          <div className="stat-item">
+          {/* <div className="stat-item">
             <span className="stat-label">📈 Nível</span>
             <span className="stat-value">{aluno.nivel}</span>
+          </div> */}
+          <div className="stat-item">
+            <span className="stat-label">🧮 Gordura (%)</span>
+            <span className="stat-value">12%</span>
           </div>
         </div>
 
@@ -101,13 +105,13 @@ const AlunoDashboard = () => {
             <span>Vencimento:</span>
             <span>{aluno.vencimento}</span>
           </div>
-          <div className="membership-status">
+          {/* <div className="membership-status">
             <span>Frequência:</span>
             <span>{aluno.frequencia}%</span>
-          </div>
-          <div className="progress-bar">
+          </div> */}
+          {/* <div className="progress-bar">
             <div className="progress" style={{ width: `${aluno.frequencia}%` }}></div>
-          </div>
+          </div> */}
         </div>
 
         <h3 className="section-title" style={{ marginTop: '2rem' }}>👨‍🏫 Instrutor</h3>
