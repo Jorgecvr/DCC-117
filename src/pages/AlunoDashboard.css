@@ -22,7 +22,7 @@ html, body, #root {
 
 /* Seção do Perfil */
 .profile-section {
-  width: 350px;
+  width: 550px;
   background: linear-gradient(135deg, #2c3e50, #34495e);
   color: white;
   padding: 2rem;
@@ -290,4 +290,66 @@ html, body, #root {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #f5f7fa;
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading-spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  color: #2c3e50;
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.error-container h3 {
+  margin-bottom: 0.5rem;
+  color: #e74c3c;
+}
+
+.error-container p {
+  margin-bottom: 1.5rem;
+  max-width: 500px;
+  line-height: 1.5;
+}
+
+.retry-button {
+  padding: 0.8rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.retry-button:hover {
+  background-color: #2980b9;
 }

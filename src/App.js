@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import Login from './pages/Login';
 import Home from './pages/Home';
 import AlunoDashboard from './pages/AlunoDashboard';
@@ -7,16 +8,48 @@ import AdminDashboard from './pages/AdminDashboard';
 import RecepcionistaDashboard from './pages/RecepcionistaDashboard';
 import ProfessorWorkoutEditor from './pages/ProfessorWorkoutEditor';
 
+import ProtectedRoute from './pages/ProtectedRoute'; // 👈 novo import
+
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/aluno" element={<AlunoDashboard />} />
-        <Route path="/recepcionista" element={<RecepcionistaDashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/professor" element={<ProfessorWorkoutEditor />} />
+
+        {/* Rotas protegidas */}
+        <Route
+          path="/aluno"
+          element={
+            <ProtectedRoute allowedRole="aluno">
+              <AlunoDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recepcionista"
+          element={
+            <ProtectedRoute allowedRole="recepcionista">
+              <RecepcionistaDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRole="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/professor"
+          element={
+            <ProtectedRoute allowedRole="professor">
+              <ProfessorWorkoutEditor />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

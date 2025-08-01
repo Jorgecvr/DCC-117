@@ -136,9 +136,6 @@ const AdminDashboard = () => {
           >
             🏋️ Alunos
           </button>
-          <button className="menu-item">
-            ⚙️ Configurações
-          </button>
         </nav>
       </div>
 

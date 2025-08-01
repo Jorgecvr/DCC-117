@@ -114,6 +114,33 @@
   align-items: center;
 }
 
+.workout-list li {
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column; /* Alterado para coluna */
+  align-items: flex-start; /* Alinhar à esquerda */
+  gap: 0.3rem; /* Espaço entre linhas */
+}
+
+.workout-list li div {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.exercise-count {
+  font-size: 0.8rem;
+  background-color: rgba(255,255,255,0.2);
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  margin-left: auto; /* Mover contador para direita */
+}
+
 .workout-list li:hover {
   background-color: #f1f5f9;
 }
@@ -379,7 +406,7 @@
 .modal-content {
   background-color: white;
   border-radius: 10px;
-  width: 500px;
+  width: 1000px;
   max-width: 90%;
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }

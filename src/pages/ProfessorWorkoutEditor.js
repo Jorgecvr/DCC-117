@@ -396,7 +396,7 @@ const AddExerciseModal = ({ onClose, onSave }) => {
                 name="rest"
                 value={exercise.rest}
                 onChange={handleChange}
-                placeholder="Ex: 60s"
+                placeholder=""
               />
             </div>
           </div>

@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './RecepcionistaDashboard.css';
 
-const initialAlunos = [
-  { id: 1, nome: 'Lucas Silva', matricula: '2023001', plano: 'Mensal', vencimento: '2025-07-01', status: 'Ativo' },
-  { id: 2, nome: 'Ana Souza', matricula: '2023002', plano: 'Trimestral', vencimento: '2025-09-15', status: 'Ativo' },
-  { id: 3, nome: 'Carlos Pereira', matricula: '2022999', plano: 'Anual', vencimento: '2026-01-10', status: 'Inativo' },
-];
+const API_URL = '/api/alunos'; // ajuste conforme seu backend
 
 const RecepcionistaDashboard = () => {
-  const [alunos, setAlunos] = useState(initialAlunos);
+  const [alunos, setAlunos] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState({ nome: '', matricula: '', plano: '', vencimento: '', status: 'Ativo' });
+
+  // Carregar alunos ao iniciar
+  useEffect(() => {
+    fetchAlunos();
+  }, []);
+
+  const fetchAlunos = async () => {
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      setAlunos(data);
+    } catch (err) {
+      alert('Erro ao carregar alunos.');
+    }
+  };
 
   const handleOpenModal = () => {
     setModalData({ nome: '', matricula: '', plano: '', vencimento: '', status: 'Ativo' });
@@ -19,28 +30,46 @@ const RecepcionistaDashboard = () => {
 
   const handleCloseModal = () => setModalOpen(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!modalData.nome.trim() || !modalData.matricula.trim()) {
       alert('Nome e Matrícula são obrigatórios!');
       return;
     }
 
-    if (modalData.id) {
-      // Editar aluno existente
-      setAlunos(alunos.map(aluno => aluno.id === modalData.id ? modalData : aluno));
-    } else {
-      // Adicionar novo aluno
-      setAlunos([
-        ...alunos,
-        { ...modalData, id: alunos.length ? Math.max(...alunos.map(a => a.id)) + 1 : 1 }
-      ]);
+    try {
+      if (modalData.id) {
+        // Atualizar aluno
+        const res = await fetch(`${API_URL}/${modalData.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(modalData),
+        });
+        if (!res.ok) throw new Error();
+      } else {
+        // Criar novo aluno
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(modalData),
+        });
+        if (!res.ok) throw new Error();
+      }
+      fetchAlunos(); // recarregar lista
+      setModalOpen(false);
+    } catch {
+      alert('Erro ao salvar aluno.');
     }
-    setModalOpen(false);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm('Tem certeza que deseja remover este aluno?')) {
-      setAlunos(alunos.filter(a => a.id !== id));
+  const handleDelete = async (id) => {
+    if (!window.confirm('Tem certeza que deseja remover este aluno?')) return;
+
+    try {
+      const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      fetchAlunos();
+    } catch {
+      alert('Erro ao deletar aluno.');
     }
   };
 
@@ -91,14 +120,12 @@ const RecepcionistaDashboard = () => {
                     <button
                       className="action-button edit"
                       onClick={() => handleEdit(aluno)}
-                      title="Editar"
                     >
                       Editar
                     </button>
                     <button
                       className="action-button delete"
                       onClick={() => handleDelete(aluno.id)}
-                      title="Remover"
                     >
                       Remover
                     </button>
