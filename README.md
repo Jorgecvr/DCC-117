@@ -1,70 +1,105 @@
-# Getting Started with Create React App
+# Sistema de Academia - Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Este é o frontend do sistema de gerenciamento de academia, desenvolvido em React.
 
-## Available Scripts
+## Configuração
 
-In the project directory, you can run:
+### Pré-requisitos
 
-### `npm start`
+- Node.js (versão 16 ou superior)
+- npm ou yarn
+- Backend da academia rodando na porta 3333
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Instalação
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. Instale as dependências:
+```bash
+npm install
+```
 
-### `npm test`
+2. Certifique-se de que o backend está rodando na porta 3333
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. Inicie o servidor de desenvolvimento:
+```bash
+npm start
+```
 
-### `npm run build`
+O aplicativo será aberto em [http://localhost:3000](http://localhost:3000).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Estrutura do Projeto
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+src/
+├── components/          # Componentes reutilizáveis
+│   ├── Header.js       # Cabeçalho da aplicação
+│   └── LogoutButton.js # Botão de logout
+├── pages/              # Páginas da aplicação
+│   ├── Login.js        # Página de login
+│   ├── AdminDashboard.js # Dashboard do administrador
+│   ├── AlunoDashboard.js # Dashboard do aluno
+│   ├── RecepcionistaDashboard.js # Dashboard do recepcionista
+│   ├── ProfessorWorkoutEditor.js # Editor de treinos do professor
+│   └── ProtectedRoute.js # Componente de rota protegida
+├── services/           # Serviços de API
+│   ├── api.js          # Configuração do axios
+│   └── userService.js  # Serviços relacionados a usuários
+├── utils/              # Utilitários
+│   └── roleMapping.js  # Mapeamento de roles
+├── styles/             # Estilos globais
+│   └── global.css
+└── assets/             # Recursos estáticos
+    └── login-banner.jpg
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Funcionalidades
 
-### `npm run eject`
+### Autenticação
+- Login com email e senha
+- Redirecionamento baseado no role do usuário
+- Proteção de rotas por role
+- Logout
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Dashboard do Administrador
+- Visualização de funcionários e alunos
+- Criação, edição e remoção de usuários
+- Gerenciamento de roles
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Roles Disponíveis
+- **ADMIN**: Acesso completo ao sistema
+- **RECEPTIONIST**: Pode criar alunos
+- **TEACHER**: Pode editar treinos
+- **STUDENT**: Acesso ao dashboard do aluno
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Integração com Backend
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+O frontend se comunica com o backend através das seguintes rotas:
 
-## Learn More
+- `POST /api/sessions/login` - Autenticação
+- `GET /api/users` - Listar usuários (apenas admin)
+- `POST /api/users/create` - Criar usuário
+- `PUT /api/users/:id` - Atualizar usuário
+- `DELETE /api/users/:id` - Deletar usuário
+- `GET /api/users/profile` - Perfil do usuário atual
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Configuração da API
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+A configuração da API está centralizada em `src/services/api.js` e inclui:
 
-### Code Splitting
+- URL base: `http://localhost:3333/api`
+- Interceptors para adicionar token de autenticação
+- Tratamento automático de erros 401 (logout)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Scripts Disponíveis
 
-### Analyzing the Bundle Size
+- `npm start` - Inicia o servidor de desenvolvimento
+- `npm build` - Cria a build de produção
+- `npm test` - Executa os testes
+- `npm eject` - Ejecta a configuração do Create React App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Tecnologias Utilizadas
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- React 19
+- React Router DOM
+- Axios
+- Styled Components
+- React Icons

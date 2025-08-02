@@ -1,94 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { userService } from '../services/userService';
+import { mapBackendRoleToFrontend } from '../utils/roleMapping';
+import LogoutButton from '../components/LogoutButton';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('funcionarios');
+  const [funcionarios, setFuncionarios] = useState([]);
+  const [alunos, setAlunos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   
-  const funcionarios = [
-    {
-      id: 1,
-      nome: "Ana Paula Costa",
-      email: "ana.costa@academia.com",
-      cargo: "Instrutora",
-      tipo: "Professor",
-      dataContratacao: "10/05/2020",
-      status: "Ativo"
-    },
-    {
-      id: 2,
-      nome: "Marcos Oliveira",
-      email: "marcos.oliveira@academia.com",
-      cargo: "Recepcionista",
-      tipo: "Recepcionista",
-      dataContratacao: "15/03/2021",
-      status: "Ativo"
-    },
-    {
-      id: 3,
-      nome: "Carlos Eduardo",
-      email: "carlos.eduardo@academia.com",
-      cargo: "Estagiário",
-      tipo: "Estagiário",
-      dataContratacao: "05/01/2023",
-      status: "Ativo"
-    },
-    {
-      id: 4,
-      nome: "Juliana Santos",
-      email: "juliana.santos@academia.com",
-      cargo: "Instrutora",
-      tipo: "Professor",
-      dataContratacao: "22/08/2019",
-      status: "Inativo"
-    }
-  ];
-
-  const alunos = [
-    {
-      id: 1,
-      nome: "Carlos Silva",
-      matricula: "AC2023001",
-      email: "carlos.silva@email.com",
-      dataInicio: "15/03/2022",
-      status: "Ativo",
-      plano: "Premium",
-      vencimento: "15/03/2024"
-    },
-    {
-      id: 2,
-      nome: "Mariana Oliveira",
-      matricula: "AC2023002",
-      email: "mariana.oliveira@email.com",
-      dataInicio: "10/04/2022",
-      status: "Ativo",
-      plano: "Básico",
-      vencimento: "10/04/2023"
-    },
-    {
-      id: 3,
-      nome: "Ricardo Andrade",
-      matricula: "AC2023003",
-      email: "ricardo.andrade@email.com",
-      dataInicio: "05/01/2023",
-      status: "Inativo",
-      plano: "Premium",
-      vencimento: "05/01/2024"
-    },
-    {
-      id: 4,
-      nome: "Fernanda Costa",
-      matricula: "AC2023004",
-      email: "fernanda.costa@email.com",
-      dataInicio: "20/02/2023",
-      status: "Ativo",
-      plano: "Intermediário",
-      vencimento: "20/02/2024"
-    }
-  ];
-
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Carregar dados iniciais
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      if (activeTab === 'funcionarios') {
+        const employees = await userService.getEmployees();
+        setFuncionarios(employees);
+      } else {
+        const students = await userService.getStudents();
+        setAlunos(students);
+      }
+    } catch (err) {
+      setError('Erro ao carregar dados. Tente novamente.');
+      console.error('Erro ao carregar dados:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Recarregar dados quando mudar a aba
+  useEffect(() => {
+    loadData();
+  }, [activeTab]);
 
   const handleEdit = (item, type) => {
     setModalData(item);
@@ -97,7 +53,18 @@ const AdminDashboard = () => {
   };
 
   const handleAddNew = () => {
-    setModalData(null);
+    setModalData(activeTab === 'funcionarios' ? {
+      name: '',
+      email: '',
+      cpf: '',
+      password: '',
+      role: 'TEACHER'
+    } : {
+      name: '',
+      email: '',
+      cpf: '',
+      password: ''
+    });
     setIsEditing(false);
     setShowModal(true);
   };
@@ -105,11 +72,86 @@ const AdminDashboard = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setModalData(null);
+    setError('');
   };
 
-  const handleSave = () => {
-    console.log('Salvando:', modalData);
-    handleCloseModal();
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      setError('');
+
+      if (activeTab === 'funcionarios') {
+        if (isEditing) {
+          await userService.updateUser(modalData.id, {
+            name: modalData.name,
+            email: modalData.email,
+            role: modalData.role,
+            tenure: modalData.tenure || 0
+          });
+        } else {
+          await userService.createUser({
+            name: modalData.name,
+            email: modalData.email,
+            cpf: modalData.cpf,
+            password: modalData.password,
+            role: modalData.role,
+            tenure: modalData.tenure || 0
+          });
+        }
+      } else {
+        if (isEditing) {
+          await userService.updateUser(modalData.id, {
+            name: modalData.name,
+            email: modalData.email
+          });
+        } else {
+          await userService.createUser({
+            name: modalData.name,
+            email: modalData.email,
+            cpf: modalData.cpf,
+            password: modalData.password,
+            isStudent: true
+          });
+        }
+      }
+
+      handleCloseModal();
+      loadData(); // Recarregar dados
+    } catch (err) {
+      setError(err.response?.data?.message || 'Erro ao salvar. Tente novamente.');
+      console.error('Erro ao salvar:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id, type) => {
+    if (!window.confirm(`Tem certeza que deseja remover este ${type}?`)) {
+      return;
+    }
+
+    try {
+      await userService.deleteUser(id);
+      loadData(); // Recarregar dados
+    } catch (err) {
+      setError('Erro ao remover. Tente novamente.');
+      console.error('Erro ao remover:', err);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('pt-BR');
+  };
+
+  const getRoleDisplay = (role) => {
+    const roleMapping = {
+      'ADMIN': 'Administrador',
+      'RECEPTIONIST': 'Recepcionista',
+      'TEACHER': 'Professor',
+      'TRAINEE': 'Estagiário'
+    };
+    return roleMapping[role] || role;
   };
 
   return (
@@ -144,23 +186,35 @@ const AdminDashboard = () => {
           <h1 className="admin-title">
             {activeTab === 'funcionarios' ? 'Gerenciamento de Funcionários' : 'Gerenciamento de Alunos'}
           </h1>
-          <button className="add-button" onClick={handleAddNew}>
-            + Adicionar {activeTab === 'funcionarios' ? 'Funcionário' : 'Aluno'}
-          </button>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <button className="add-button" onClick={handleAddNew}>
+              + Adicionar {activeTab === 'funcionarios' ? 'Funcionário' : 'Aluno'}
+            </button>
+            <LogoutButton />
+          </div>
         </div>
 
+        {error && (
+          <div style={{ color: 'red', textAlign: 'center', margin: '10px 0' }}>
+            {error}
+          </div>
+        )}
+
         <div className="admin-table-container">
-          {activeTab === 'funcionarios' ? (
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              Carregando...
+            </div>
+          ) : activeTab === 'funcionarios' ? (
             <table className="admin-table">
               <thead>
                 <tr>
                   <th>ID</th>
                   <th>Nome</th>
                   <th>Email</th>
+                  <th>CPF</th>
                   <th>Cargo</th>
-                  <th>Tipo</th>
                   <th>Data de Contratação</th>
-                  <th>Status</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -168,16 +222,11 @@ const AdminDashboard = () => {
                 {funcionarios.map(funcionario => (
                   <tr key={funcionario.id}>
                     <td>{funcionario.id}</td>
-                    <td>{funcionario.nome}</td>
-                    <td>{funcionario.email}</td>
-                    <td>{funcionario.cargo}</td>
-                    <td>{funcionario.tipo}</td>
-                    <td>{funcionario.dataContratacao}</td>
-                    <td>
-                      <span className={`status-badge ${funcionario.status === 'Ativo' ? 'active' : 'inactive'}`}>
-                        {funcionario.status}
-                      </span>
-                    </td>
+                    <td>{funcionario.person?.name || funcionario.name}</td>
+                    <td>{funcionario.person?.email || funcionario.email}</td>
+                    <td>{funcionario.person?.cpf || funcionario.cpf}</td>
+                    <td>{getRoleDisplay(funcionario.role)}</td>
+                    <td>{formatDate(funcionario.createdAt)}</td>
                     <td>
                       <button 
                         className="action-button edit"
@@ -185,7 +234,10 @@ const AdminDashboard = () => {
                       >
                         Editar
                       </button>
-                      <button className="action-button delete">
+                      <button 
+                        className="action-button delete"
+                        onClick={() => handleDelete(funcionario.id, 'funcionario')}
+                      >
                         Remover
                       </button>
                     </td>
@@ -197,30 +249,22 @@ const AdminDashboard = () => {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Matrícula</th>
+                  <th>ID</th>
                   <th>Nome</th>
                   <th>Email</th>
-                  <th>Data de Início</th>
-                  <th>Plano</th>
-                  <th>Vencimento</th>
-                  <th>Status</th>
+                  <th>CPF</th>
+                  <th>Data de Cadastro</th>
                   <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {alunos.map(aluno => (
                   <tr key={aluno.id}>
-                    <td>{aluno.matricula}</td>
-                    <td>{aluno.nome}</td>
-                    <td>{aluno.email}</td>
-                    <td>{aluno.dataInicio}</td>
-                    <td>{aluno.plano}</td>
-                    <td>{aluno.vencimento}</td>
-                    <td>
-                      <span className={`status-badge ${aluno.status === 'Ativo' ? 'active' : 'inactive'}`}>
-                        {aluno.status}
-                      </span>
-                    </td>
+                    <td>{aluno.id}</td>
+                    <td>{aluno.person?.name || aluno.name}</td>
+                    <td>{aluno.person?.email || aluno.email}</td>
+                    <td>{aluno.person?.cpf || aluno.cpf}</td>
+                    <td>{formatDate(aluno.createdAt)}</td>
                     <td>
                       <button 
                         className="action-button edit"
@@ -228,7 +272,10 @@ const AdminDashboard = () => {
                       >
                         Editar
                       </button>
-                      <button className="action-button delete">
+                      <button 
+                        className="action-button delete"
+                        onClick={() => handleDelete(aluno.id, 'aluno')}
+                      >
                         Remover
                       </button>
                     </td>
@@ -255,8 +302,9 @@ const AdminDashboard = () => {
                     <label>Nome</label>
                     <input 
                       type="text" 
-                      value={modalData?.nome || ''}
-                      onChange={(e) => setModalData({...modalData, nome: e.target.value})}
+                      value={modalData?.name || ''}
+                      onChange={(e) => setModalData({...modalData, name: e.target.value})}
+                      disabled={saving}
                     />
                   </div>
                   <div className="form-group">
@@ -265,40 +313,40 @@ const AdminDashboard = () => {
                       type="email" 
                       value={modalData?.email || ''}
                       onChange={(e) => setModalData({...modalData, email: e.target.value})}
+                      disabled={saving}
                     />
                   </div>
+                  <div className="form-group">
+                    <label>CPF</label>
+                    <input 
+                      type="text" 
+                      value={modalData?.cpf || ''}
+                      onChange={(e) => setModalData({...modalData, cpf: e.target.value})}
+                      disabled={saving}
+                    />
+                  </div>
+                  {!isEditing && (
+                    <div className="form-group">
+                      <label>Senha</label>
+                      <input 
+                        type="password" 
+                        value={modalData?.password || ''}
+                        onChange={(e) => setModalData({...modalData, password: e.target.value})}
+                        disabled={saving}
+                      />
+                    </div>
+                  )}
                   <div className="form-group">
                     <label>Cargo</label>
-                    <input 
-                      type="text" 
-                      value={modalData?.cargo || ''}
-                      onChange={(e) => setModalData({...modalData, cargo: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Tipo</label>
-                    <input 
-                      type="text" 
-                      value={modalData?.tipo || ''}
-                      onChange={(e) => setModalData({...modalData, tipo: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Data de Contratação</label>
-                    <input 
-                      type="text" 
-                      value={modalData?.dataContratacao || ''}
-                      onChange={(e) => setModalData({...modalData, dataContratacao: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Status</label>
                     <select 
-                      value={modalData?.status || ''}
-                      onChange={(e) => setModalData({...modalData, status: e.target.value})}
+                      value={modalData?.role || 'TEACHER'}
+                      onChange={(e) => setModalData({...modalData, role: e.target.value})}
+                      disabled={saving}
                     >
-                      <option value="Ativo">Ativo</option>
-                      <option value="Inativo">Inativo</option>
+                      <option value="ADMIN">Administrador</option>
+                      <option value="RECEPTIONIST">Recepcionista</option>
+                      <option value="TEACHER">Professor</option>
+                      <option value="TRAINEE">Estagiário</option>
                     </select>
                   </div>
                 </form>
@@ -308,16 +356,9 @@ const AdminDashboard = () => {
                     <label>Nome</label>
                     <input 
                       type="text" 
-                      value={modalData?.nome || ''}
-                      onChange={(e) => setModalData({...modalData, nome: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Matrícula</label>
-                    <input 
-                      type="text" 
-                      value={modalData?.matricula || ''}
-                      onChange={(e) => setModalData({...modalData, matricula: e.target.value})}
+                      value={modalData?.name || ''}
+                      onChange={(e) => setModalData({...modalData, name: e.target.value})}
+                      disabled={saving}
                     />
                   </div>
                   <div className="form-group">
@@ -326,51 +367,38 @@ const AdminDashboard = () => {
                       type="email" 
                       value={modalData?.email || ''}
                       onChange={(e) => setModalData({...modalData, email: e.target.value})}
+                      disabled={saving}
                     />
                   </div>
                   <div className="form-group">
-                    <label>Data de Início</label>
+                    <label>CPF</label>
                     <input 
                       type="text" 
-                      value={modalData?.dataInicio || ''}
-                      onChange={(e) => setModalData({...modalData, dataInicio: e.target.value})}
+                      value={modalData?.cpf || ''}
+                      onChange={(e) => setModalData({...modalData, cpf: e.target.value})}
+                      disabled={saving}
                     />
                   </div>
-                  <div className="form-group">
-                    <label>Plano</label>
-                    <input 
-                      type="text" 
-                      value={modalData?.plano || ''}
-                      onChange={(e) => setModalData({...modalData, plano: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Vencimento</label>
-                    <input 
-                      type="text" 
-                      value={modalData?.vencimento || ''}
-                      onChange={(e) => setModalData({...modalData, vencimento: e.target.value})}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Status</label>
-                    <select 
-                      value={modalData?.status || ''}
-                      onChange={(e) => setModalData({...modalData, status: e.target.value})}
-                    >
-                      <option value="Ativo">Ativo</option>
-                      <option value="Inativo">Inativo</option>
-                    </select>
-                  </div>
+                  {!isEditing && (
+                    <div className="form-group">
+                      <label>Senha</label>
+                      <input 
+                        type="password" 
+                        value={modalData?.password || ''}
+                        onChange={(e) => setModalData({...modalData, password: e.target.value})}
+                        disabled={saving}
+                      />
+                    </div>
+                  )}
                 </form>
               )}
             </div>
 
             <div className="modal-footer">
-              <button className="save-button" onClick={handleSave}>
-                Salvar
+              <button className="save-button" onClick={handleSave} disabled={saving}>
+                {saving ? 'Salvando...' : 'Salvar'}
               </button>
-              <button className="cancel-button" onClick={handleCloseModal}>
+              <button className="cancel-button" onClick={handleCloseModal} disabled={saving}>
                 Cancelar
               </button>
             </div>

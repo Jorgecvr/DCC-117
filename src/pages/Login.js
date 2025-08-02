@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
+import { getPrimaryRole } from '../utils/roleMapping';
 import banner from '../assets/login-banner.jpg';
 import '../styles/global.css';
 
@@ -8,69 +9,53 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     const response = await axios.post('http://localhost:3333/api/sessions/login', {
-  //       email,
-  //       password: senha,
-  //     });
-
-  //     const { token, user } = response.data;
-      
-
-  //     localStorage.setItem('token', token);
-  //     localStorage.setItem('user', JSON.stringify(user));
-  //     localStorage.setItem('role', user.role.toLowerCase());
-
-  //     switch (user.role.toLowerCase()) {
-  //       case 'admin':
-  //         navigate('/admin');
-  //         break;
-  //       case 'recepcionista':
-  //         navigate('/recepcionista');
-  //         break;
-  //       case 'professor':
-  //         navigate('/professor');
-  //         break;
-  //       case 'aluno':
-  //         navigate('/aluno');
-  //         break;
-  //       default:
-  //         navigate('/home', { state: { perfil: user.role } });
-  //     }
-  //   } catch (err) {
-  //     navigate('/aluno');
-  //     console.error(err);
-  //     setError('Email ou senha inválidos.');
-  //   }
-  // };
-
-
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  try {
-    // 👇 Simulando login como ALUNO
-    const fakeUser = {
-      role: 'admin',
-      email,
-    };
-    const fakeToken = 'fake-token';
+    try {
+      const response = await api.post('/sessions/login', {
+        email,
+        password: senha,
+      });
 
-    localStorage.setItem('token', fakeToken);
-    localStorage.setItem('user', JSON.stringify(fakeUser));
-    localStorage.setItem('role', fakeUser.role.toLowerCase());
+      const { token, user } = response.data;
+      
+      // Mapear o role do backend para o frontend
+      const primaryRole = getPrimaryRole(user.roles);
+      
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('role', primaryRole);
 
-    navigate('/admin'); // Redireciona para a dashboard do aluno
-  } catch (err) {
-    console.error(err);
-    setError('Erro na simulação.');
-  }
-};
+      // Redirecionar baseado no role
+      switch (primaryRole) {
+        case 'admin':
+          navigate('/admin');
+          break;
+        case 'recepcionista':
+          navigate('/recepcionista');
+          break;
+        case 'professor':
+          navigate('/professor');
+          break;
+        case 'aluno':
+          navigate('/aluno');
+          break;
+        default:
+          navigate('/home', { state: { perfil: primaryRole } });
+      }
+    } catch (err) {
+      console.error('Erro no login:', err);
+      setError(err.response?.data?.message || 'Email ou senha inválidos.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="login-background">
@@ -86,6 +71,7 @@ const Login = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={loading}
           />
           <input
             type="password"
@@ -93,11 +79,14 @@ const Login = () => {
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
             required
+            disabled={loading}
           />
-          <button type="submit">Entrar</button>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
         </form>
 
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
 
         <div className="login-links">
           <a href="#">Esqueceu a senha?</a>
