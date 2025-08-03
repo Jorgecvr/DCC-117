@@ -1,13 +1,19 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import './HeaderProfessor.css';
 
 const HeaderProfessor = ({ professorNome, professorFoto }) => {
+  const location = useLocation();
+  const isOnDashboard = location.pathname === '/professor';
+  
   return (
     <header className="header-container">
       <div className="header-left">
         <div className="logo">UFJF GYM</div>
         <nav className="header-nav">
-          <a href="/alunos" className="nav-link">Alunos</a>
+          {!isOnDashboard && (
+            <Link to="/professor" className="nav-link">Meus Alunos</Link>
+          )}
         </nav>
       </div>
       

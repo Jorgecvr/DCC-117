@@ -25,12 +25,20 @@ const Login = () => {
 
       const { token, user } = response.data;
       
+      console.log('Dados recebidos do login:', { token: token.substring(0, 20) + '...', user });
+      
       // Mapear o role do backend para o frontend
       const primaryRole = getPrimaryRole(user.roles);
       
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('role', primaryRole);
+
+      console.log('Dados armazenados no localStorage:', {
+        token: localStorage.getItem('token')?.substring(0, 20) + '...',
+        user: JSON.parse(localStorage.getItem('user')),
+        role: localStorage.getItem('role')
+      });
 
       // Redirecionar baseado no role
       switch (primaryRole) {

@@ -1,66 +1,182 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { userService } from '../services/userService';
 import './ProfessorWorkoutEditor.css';
 import HeaderProfessor from "./HeaderProfessor.js"
 
 const ProfessorWorkoutEditor = () => {
-  const [workouts, setWorkouts] = useState([
-    {
-      id: 1,
-      name: 'Costas e Bíceps',
-      objective: 'hypertrophy',
-      notes: 'Focar na execução correta dos movimentos',
-      exercises: [
-        {
-          id: 101,
-          name: 'Barra Fixa',
-          sets: '4',
-          reps: '8-10',
-          weight: 'Peso Corporal',
-          rest: '90s',
-          notes: 'Execução completa'
-        },
-        {
-          id: 102,
-          name: 'Rosca Direta',
-          sets: '3',
-          reps: '10-12',
-          weight: '12kg',
-          rest: '60s',
-          notes: 'Controle a descida'
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Peito e Tríceps',
-      objective: 'hypertrophy',
-      notes: 'Manter boa amplitude de movimento',
-      exercises: [
-        {
-          id: 201,
-          name: 'Supino Reto',
-          sets: '4',
-          reps: '10-12',
-          weight: '40kg',
-          rest: '90s',
-          notes: 'Controle a descida'
-        }
-      ]
-    }
-  ]);
+  const { id: studentId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [aluno, setAluno] = useState(null);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
+  const [salvando, setSalvando] = useState(false);
+  const [mensagemSucesso, setMensagemSucesso] = useState('');
+  const [workouts, setWorkouts] = useState([]);
 
   const [activeWorkout, setActiveWorkout] = useState(0);
   const [showWorkoutModal, setShowWorkoutModal] = useState(false);
   const [showExerciseModal, setShowExerciseModal] = useState(false);
 
-  // Dados fictícios do aluno
-  const aluno = {
-    nome: "Ana Carolina Oliveira",
-    matricula: "AC20230045",
-    foto: "https://randomuser.me/api/portraits/women/44.jpg",
-    membroDesde: "15/03/2023",
-    objetivo: "Hipertrofia",
-    instrutor: "Arthur Busquet"
+  // Dados do professor (serão obtidos do token/contexto)
+  const professor = {
+    nome: "Arthur Busquet",
+    foto: "https://randomuser.me/api/portraits/men/44.jpg"
+  };
+
+  // Função para transformar dados do frontend para o formato do backend
+  const transformToBackendFormat = (workouts) => {
+    console.log('Transformando workouts para backend:', workouts);
+    
+    // Verificar se há workouts válidos
+    if (!workouts || workouts.length === 0) {
+      console.error('Nenhum workout para transformar');
+      return null;
+    }
+
+    const backendData = {
+      nome: "Ficha de Treino",
+      objetivo: workouts[0]?.objective || "hypertrophy",
+      validoAte: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      observacoes: workouts[0]?.notes || "",
+      grupos: workouts.map(workout => {
+        console.log('Processando workout:', workout);
+        return {
+          nome: workout.name || "Treino",
+          exercicios: (workout.exercises || []).map(exercise => {
+            console.log('Processando exercício:', exercise);
+            return {
+              nome: exercise.name || "",
+              series: exercise.sets || "",
+              repeticoes: exercise.reps || "",
+              carga: exercise.weight || "",
+              descanso: exercise.rest || ""
+            };
+          })
+        };
+      })
+    };
+
+    console.log('Dados transformados para backend:', backendData);
+    return backendData;
+  };
+
+  // Função para transformar dados do backend para o formato do frontend
+  const transformFromBackendFormat = (backendData) => {
+    if (!backendData || !backendData.content) {
+      return [];
+    }
+
+    const content = backendData.content;
+    if (!content.grupos || !Array.isArray(content.grupos)) {
+      return [];
+    }
+
+    return content.grupos.map((grupo, index) => ({
+      id: index + 1,
+      name: grupo.nome || `Treino ${index + 1}`,
+      objective: content.objetivo || 'hypertrophy',
+      notes: content.observacoes || '',
+      exercises: (grupo.exercicios || []).map((exercicio, exIndex) => ({
+        id: (index + 1) * 100 + exIndex + 1,
+        name: exercicio.nome || '',
+        sets: exercicio.series || '',
+        reps: exercicio.repeticoes || '',
+        weight: exercicio.carga || '',
+        rest: exercicio.descanso || '',
+        notes: ''
+      }))
+    }));
+  };
+
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        setCarregando(true);
+        setErro(null);
+
+        // Se temos dados do aluno no state da navegação, use-os
+        if (location.state?.aluno) {
+          setAluno(location.state.aluno);
+        } else {
+          // Caso contrário, busque os dados do aluno pelo ID
+          console.log('Buscando dados do aluno:', studentId);
+          const studentData = await userService.getStudentWorkoutPlan(studentId);
+          console.log('Dados do aluno recebidos:', studentData);
+          setAluno(studentData);
+        }
+
+        // Buscar ficha de treino existente
+        try {
+          const workoutPlanData = await userService.getStudentWorkoutPlan(studentId);
+          console.log('Ficha de treino recebida:', workoutPlanData);
+          const transformedWorkouts = transformFromBackendFormat(workoutPlanData);
+          setWorkouts(transformedWorkouts);
+        } catch (workoutError) {
+          console.log('Nenhuma ficha de treino encontrada, iniciando com treinos vazios');
+          setWorkouts([]);
+        }
+      } catch (err) {
+        console.error('Erro ao carregar dados do aluno:', err);
+        setErro('Erro ao carregar dados do aluno. Tente novamente.');
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    if (studentId) {
+      fetchStudentData();
+    }
+  }, [studentId, location.state]);
+
+  const handleSaveWorkoutPlan = async () => {
+    try {
+      setSalvando(true);
+      setErro(null);
+      setMensagemSucesso('');
+
+      console.log('Iniciando salvamento da ficha de treino...');
+      console.log('Workouts atuais:', workouts);
+
+      if (workouts.length === 0) {
+        setErro('Adicione pelo menos um treino antes de salvar.');
+        return;
+      }
+
+      const backendData = transformToBackendFormat(workouts);
+      
+      if (!backendData) {
+        setErro('Erro ao preparar dados para salvamento.');
+        return;
+      }
+
+      console.log('Dados a serem enviados para o backend:', backendData);
+      console.log('Student ID:', studentId);
+
+      const response = await userService.saveStudentWorkoutPlan(studentId, backendData);
+      console.log('Resposta do backend:', response);
+      
+      setMensagemSucesso('Ficha de treino salva com sucesso!');
+      setTimeout(() => setMensagemSucesso(''), 3000);
+    } catch (err) {
+      console.error('Erro detalhado ao salvar ficha de treino:', err);
+      console.error('Response data:', err.response?.data);
+      console.error('Response status:', err.response?.status);
+      console.error('Response headers:', err.response?.headers);
+      
+      let errorMessage = 'Erro ao salvar ficha de treino.';
+      
+      if (err.response?.data?.message) {
+        errorMessage += ` ${err.response.data.message}`;
+      } else if (err.message) {
+        errorMessage += ` ${err.message}`;
+      }
+      
+      setErro(errorMessage);
+    } finally {
+      setSalvando(false);
+    }
   };
 
   const handleAddWorkout = (workoutName) => {
@@ -94,24 +210,98 @@ const ProfessorWorkoutEditor = () => {
     setWorkouts(updatedWorkouts);
   };
 
+  const handleDeleteWorkout = () => {
+    if (workouts.length <= 1) {
+      setErro('Deve haver pelo menos um treino.');
+      return;
+    }
+    
+    const updatedWorkouts = workouts.filter((_, index) => index !== activeWorkout);
+    setWorkouts(updatedWorkouts);
+    setActiveWorkout(Math.max(0, activeWorkout - 1));
+  };
+
+  if (carregando) {
+    return (
+      <div className="professor-container">
+        <HeaderProfessor professorNome={professor.nome} professorFoto={professor.foto} />
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Carregando dados do aluno...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (erro && !aluno) {
+    return (
+      <div className="professor-container">
+        <HeaderProfessor professorNome={professor.nome} professorFoto={professor.foto} />
+        <div className="error-container">
+          <p>{erro}</p>
+          <button onClick={() => navigate('/professor')} className="back-button">
+            Voltar para Lista de Alunos
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!aluno) {
+    return (
+      <div className="professor-container">
+        <HeaderProfessor professorNome={professor.nome} professorFoto={professor.foto} />
+        <div className="error-container">
+          <p>Aluno não encontrado.</p>
+          <button onClick={() => navigate('/professor')} className="back-button">
+            Voltar para Lista de Alunos
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="professor-container">
       {/* Cabeçalho */}
-    <HeaderProfessor professorNome={"Arthur Busquet"} professorFoto="https://randomuser.me/api/portraits/men/44.jpg" />
+      <HeaderProfessor professorNome={professor.nome} professorFoto={professor.foto} />
 
       <div className="workout-editor">
         {/* Informações do aluno */}
         <div className="student-card">
           <div className="student-photo-container">
-            <img src={aluno.foto} alt={aluno.nome} className="student-photo" />
+            <img 
+              src={aluno.photo || 'https://randomuser.me/api/portraits/lego/1.jpg'} 
+              alt={aluno.name} 
+              className="student-photo"
+              onError={(e) => {
+                e.target.src = 'https://randomuser.me/api/portraits/lego/1.jpg';
+              }}
+            />
           </div>
           <div className="student-info">
-            <h2>{aluno.nome}</h2>
-            <p><strong>Matrícula:</strong> #{aluno.matricula}</p>
-            <p><strong>Membro desde:</strong> {aluno.membroDesde}</p>
-            <p><strong>Objetivo atual:</strong> {aluno.objetivo}</p>
+            <h2>{aluno.name}</h2>
+            <p><strong>Email:</strong> {aluno.email}</p>
+            <p><strong>CPF:</strong> {aluno.cpf}</p>
+            <p><strong>Membro desde:</strong> {new Date(aluno.createdAt).toLocaleDateString('pt-BR')}</p>
+            {aluno.activeMembership && (
+              <p><strong>Plano ativo:</strong> {aluno.activeMembership.type}</p>
+            )}
           </div>
         </div>
+
+        {/* Mensagens de erro e sucesso */}
+        {erro && (
+          <div className="error-message">
+            <p>{erro}</p>
+          </div>
+        )}
+
+        {mensagemSucesso && (
+          <div className="success-message">
+            <p>{mensagemSucesso}</p>
+          </div>
+        )}
 
         {/* Editor de ficha */}
         <div className="workout-content">
@@ -147,7 +337,12 @@ const ProfessorWorkoutEditor = () => {
                 <div className="workout-header">
                   <h2>{workouts[activeWorkout].name}</h2>
                   <div>
-                    <button className="delete-training-btn">Excluir treino</button>
+                    <button 
+                      className="delete-training-btn"
+                      onClick={handleDeleteWorkout}
+                    >
+                      Excluir treino
+                    </button>
                     <select
                         value={workouts[activeWorkout].objective}
                         onChange={(e) => {
@@ -248,8 +443,19 @@ const ProfessorWorkoutEditor = () => {
         </div>
 
         <div className="form-actions">
-          <button className="cancel-btn">Cancelar</button>
-          <button className="save-btn">Salvar Ficha</button>
+          <button 
+            className="cancel-btn"
+            onClick={() => navigate('/professor')}
+          >
+            Cancelar
+          </button>
+          <button 
+            className="save-btn"
+            onClick={handleSaveWorkoutPlan}
+            disabled={salvando}
+          >
+            {salvando ? 'Salvando...' : 'Salvar Ficha'}
+          </button>
         </div>
       </div>
 

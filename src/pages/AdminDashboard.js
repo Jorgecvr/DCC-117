@@ -222,9 +222,9 @@ const AdminDashboard = () => {
                 {funcionarios.map(funcionario => (
                   <tr key={funcionario.id}>
                     <td>{funcionario.id}</td>
-                    <td>{funcionario.person?.name || funcionario.name}</td>
-                    <td>{funcionario.person?.email || funcionario.email}</td>
-                    <td>{funcionario.person?.cpf || funcionario.cpf}</td>
+                    <td>{funcionario.name}</td>
+                    <td>{funcionario.email}</td>
+                    <td>{funcionario.cpf}</td>
                     <td>{getRoleDisplay(funcionario.role)}</td>
                     <td>{formatDate(funcionario.createdAt)}</td>
                     <td>
@@ -261,9 +261,9 @@ const AdminDashboard = () => {
                 {alunos.map(aluno => (
                   <tr key={aluno.id}>
                     <td>{aluno.id}</td>
-                    <td>{aluno.person?.name || aluno.name}</td>
-                    <td>{aluno.person?.email || aluno.email}</td>
-                    <td>{aluno.person?.cpf || aluno.cpf}</td>
+                    <td>{aluno.name}</td>
+                    <td>{aluno.email}</td>
+                    <td>{aluno.cpf}</td>
                     <td>{formatDate(aluno.createdAt)}</td>
                     <td>
                       <button 

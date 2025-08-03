@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { userService } from '../services/userService';
 import './RecepcionistaDashboard.css';
-
-const API_URL = '/api/alunos'; // ajuste conforme seu backend
 
 const RecepcionistaDashboard = () => {
   const [alunos, setAlunos] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalData, setModalData] = useState({ nome: '', matricula: '', plano: '', vencimento: '', status: 'Ativo' });
+  const [modalData, setModalData] = useState({ nome: '', email: '', cpf: '', plano: '', vencimento: '', status: 'Ativo' });
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
 
   // Carregar alunos ao iniciar
   useEffect(() => {
@@ -15,49 +16,60 @@ const RecepcionistaDashboard = () => {
 
   const fetchAlunos = async () => {
     try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
+      setCarregando(true);
+      setErro(null);
+      
+      console.log('Buscando lista de alunos...');
+      const data = await userService.getStudentsList();
+      console.log('Dados dos alunos recebidos:', data);
       setAlunos(data);
     } catch (err) {
-      alert('Erro ao carregar alunos.');
+      console.error('Erro ao carregar alunos:', err);
+      setErro('Erro ao carregar alunos do servidor. Tente novamente.');
+    } finally {
+      setCarregando(false);
     }
   };
 
   const handleOpenModal = () => {
-    setModalData({ nome: '', matricula: '', plano: '', vencimento: '', status: 'Ativo' });
+    setModalData({ nome: '', email: '', cpf: '', plano: '', vencimento: '', status: 'Ativo' });
     setModalOpen(true);
   };
 
   const handleCloseModal = () => setModalOpen(false);
 
   const handleSave = async () => {
-    if (!modalData.nome.trim() || !modalData.matricula.trim()) {
-      alert('Nome e Matrícula são obrigatórios!');
+    if (!modalData.nome.trim() || !modalData.email.trim()) {
+      alert('Nome e Email são obrigatórios!');
       return;
     }
 
     try {
       if (modalData.id) {
-        // Atualizar aluno
-        const res = await fetch(`${API_URL}/${modalData.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(modalData),
+        // Atualizar aluno existente
+        await userService.updateUser(modalData.id, {
+          name: modalData.nome,
+          email: modalData.email,
+          cpf: modalData.cpf
         });
-        if (!res.ok) throw new Error();
+        alert('Aluno atualizado com sucesso!');
       } else {
         // Criar novo aluno
-        const res = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(modalData),
+        await userService.createUser({
+          name: modalData.nome,
+          email: modalData.email,
+          cpf: modalData.cpf,
+          password: '654321', // Senha padrão
+          isStudent: true
         });
-        if (!res.ok) throw new Error();
+        alert('Aluno criado com sucesso!');
       }
-      fetchAlunos(); // recarregar lista
+      
       setModalOpen(false);
-    } catch {
-      alert('Erro ao salvar aluno.');
+      fetchAlunos(); // Recarregar lista
+    } catch (error) {
+      console.error('Erro ao salvar aluno:', error);
+      alert('Erro ao salvar aluno: ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -65,16 +77,23 @@ const RecepcionistaDashboard = () => {
     if (!window.confirm('Tem certeza que deseja remover este aluno?')) return;
 
     try {
-      const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
-      fetchAlunos();
-    } catch {
-      alert('Erro ao deletar aluno.');
+      await userService.deleteUser(id);
+      alert('Aluno removido com sucesso!');
+      fetchAlunos(); // Recarregar lista
+    } catch (error) {
+      console.error('Erro ao deletar aluno:', error);
+      alert('Erro ao deletar aluno: ' + (error.response?.data?.message || error.message));
     }
   };
 
   const handleEdit = (aluno) => {
-    setModalData(aluno);
+    setModalData({
+      id: aluno.id,
+      nome: aluno.name,
+      email: aluno.email,
+      cpf: aluno.cpf,
+      plano: aluno.activeMembership ? aluno.activeMembership.type : ''
+    });
     setModalOpen(true);
   };
 
@@ -85,57 +104,78 @@ const RecepcionistaDashboard = () => {
         <button className="add-button" onClick={handleOpenModal}>Adicionar Aluno</button>
       </div>
 
-      <div className="recepcionista-table-container">
-        <table className="recepcionista-table">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Matrícula</th>
-              <th>Plano</th>
-              <th>Vencimento</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {alunos.length === 0 ? (
+      {carregando && (
+        <div style={{ textAlign: 'center', padding: '20px' }}>
+          Carregando alunos...
+        </div>
+      )}
+
+      {erro && (
+        <div style={{ textAlign: 'center', padding: '20px', color: 'red' }}>
+          {erro}
+        </div>
+      )}
+
+      {!carregando && !erro && (
+        <div className="recepcionista-table-container">
+          <table className="recepcionista-table">
+            <thead>
               <tr>
-                <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
-                  Nenhum aluno cadastrado.
-                </td>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>CPF</th>
+                <th>Plano Ativo</th>
+                <th>Data de Início</th>
+                <th>Status</th>
+                <th>Ações</th>
               </tr>
-            ) : (
-              alunos.map(aluno => (
-                <tr key={aluno.id}>
-                  <td>{aluno.nome}</td>
-                  <td>{aluno.matricula}</td>
-                  <td>{aluno.plano}</td>
-                  <td>{aluno.vencimento}</td>
-                  <td>
-                    <span className={`status-badge ${aluno.status.toLowerCase()}`}>
-                      {aluno.status}
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      className="action-button edit"
-                      onClick={() => handleEdit(aluno)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="action-button delete"
-                      onClick={() => handleDelete(aluno.id)}
-                    >
-                      Remover
-                    </button>
+            </thead>
+            <tbody>
+              {alunos.length === 0 ? (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
+                    Nenhum aluno cadastrado.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                alunos.map(aluno => (
+                  <tr key={aluno.id}>
+                    <td>{aluno.name}</td>
+                    <td>{aluno.email}</td>
+                    <td>{aluno.cpf}</td>
+                    <td>{aluno.activeMembership ? aluno.activeMembership.type : 'Sem plano'}</td>
+                    <td>
+                      {aluno.activeMembership 
+                        ? new Date(aluno.activeMembership.startDate).toLocaleDateString('pt-BR')
+                        : 'N/A'
+                      }
+                    </td>
+                    <td>
+                      <span className={`status-badge ${aluno.activeMembership ? 'ativo' : 'inativo'}`}>
+                        {aluno.activeMembership ? 'Ativo' : 'Inativo'}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        className="action-button edit"
+                        onClick={() => handleEdit(aluno)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="action-button delete"
+                        onClick={() => handleDelete(aluno.id)}
+                      >
+                        Remover
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {modalOpen && (
         <div className="recepcionista-modal-overlay" onClick={handleCloseModal}>
@@ -157,11 +197,20 @@ const RecepcionistaDashboard = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Matrícula</label>
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    value={modalData.email}
+                    onChange={(e) => setModalData({ ...modalData, email: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>CPF</label>
                   <input
                     type="text"
-                    value={modalData.matricula}
-                    onChange={(e) => setModalData({ ...modalData, matricula: e.target.value })}
+                    value={modalData.cpf}
+                    onChange={(e) => setModalData({ ...modalData, cpf: e.target.value })}
                   />
                 </div>
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { userService } from '../services/userService';
 import './AlunoDashboard.css';
 
 const AlunoDashboard = () => {
@@ -12,40 +12,32 @@ const AlunoDashboard = () => {
     const fetchAluno = async () => {
       try {
         setCarregando(true);
-        const token = localStorage.getItem('token');
+        setErro(null);
 
-        // Simulando dados mock quando o backend está offline
-        if (!token) {
-          throw new Error('Sem token de autenticação');
-        }
+        // Buscar perfil completo do aluno
+        console.log('Buscando perfil do aluno...');
+        const alunoData = await userService.getStudentProfile();
+        console.log('Dados do aluno recebidos:', alunoData);
+        setAluno(alunoData);
 
-        // Tenta buscar os dados reais
-        try {
-          const response = await axios.get('http://localhost:3333/api/users/profile', {
-            headers: { Authorization: `Bearer ${token}` },
+        // Buscar ficha de treino se o aluno tiver um ID de estudante
+        if (alunoData.workoutPlan) {
+          setFichaTreino(alunoData.workoutPlan);
+        } else {
+          // Se não tiver ficha de treino, criar uma estrutura vazia
+          setFichaTreino({
+            content: {
+              nome: "Nenhuma ficha de treino encontrada",
+              objetivo: "Aguardando criação pelo instrutor",
+              validoAte: "Não definido",
+              observacoes: "Entre em contato com seu instrutor para criar uma ficha de treino personalizada.",
+              grupos: []
+            }
           });
-
-          const userData = response.data;
-          setAluno(userData);
-
-          const fichaResponse = await axios.get(`http://localhost:3333/api/alunos/${userData.id}/ficha`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          setFichaTreino(fichaResponse.data);
-          setErro(null);
-        } catch (apiError) {
-          // Se a API falhar, usa dados mock
-          console.warn('API offline, usando dados mock...', apiError);
-          setAluno(getMockAluno());
-          setFichaTreino(getMockFichaTreino());
         }
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
-        setErro('Não foi possível conectar ao servidor. Mostrando dados de exemplo...');
-        // Mostra dados mock mesmo com erro
-        setAluno(getMockAluno());
-        setFichaTreino(getMockFichaTreino());
+        setErro('Erro ao carregar dados do servidor. Tente novamente.');
       } finally {
         setCarregando(false);
       }
@@ -54,60 +46,7 @@ const AlunoDashboard = () => {
     fetchAluno();
   }, []);
 
-  // Dados mock para quando a API estiver offline
-  const getMockAluno = () => ({
-    nome: "João Silva",
-    matricula: "JS20230001",
-    peso: "75kg",
-    altura: "1.75m",
-    imc: "24.5",
-    objetivo: "Hipertrofia",
-    nivel: "Intermediário",
-    membroDesde: "15/03/2023",
-    vencimento: "15/09/2023",
-    frequencia: 78,
-    instrutor: "Carlos Machado"
-  });
 
-  const getMockFichaTreino = () => ({
-    nome: "Treino ABC - Hipertrofia",
-    objetivo: "Ganho de Massa Muscular",
-    validoAte: "30/09/2023",
-    observacoes: "Focar na execução correta dos movimentos e controle da fase excêntrica.",
-    grupos: [
-      {
-        nome: "Peito e Tríceps",
-        exercicios: [
-          {
-            nome: "Supino Reto",
-            series: "4",
-            repeticoes: "10-12",
-            carga: "40kg",
-            descanso: "90s"
-          },
-          {
-            nome: "Supino Inclinado Halteres",
-            series: "3",
-            repeticoes: "12-15",
-            carga: "18kg",
-            descanso: "60s"
-          }
-        ]
-      },
-      {
-        nome: "Costas e Bíceps",
-        exercicios: [
-          {
-            nome: "Barra Fixa",
-            series: "4",
-            repeticoes: "8-10",
-            carga: "Peso Corporal",
-            descanso: "90s"
-          }
-        ]
-      }
-    ]
-  });
 
   // Componente de carregamento
   const LoadingState = () => (
@@ -175,41 +114,47 @@ const AlunoDashboard = () => {
       <div className="workout-section">
         <div className="workout-header">
           <h1 className="workout-title">Minha Ficha de Treino</h1>
-          <div className="workout-date">📅 Válido até: {fichaTreino.validoAte}</div>
+          <div className="workout-date">📅 Válido até: {fichaTreino.content?.validoAte || "Não definido"}</div>
         </div>
 
         {erro && (
           <div className="offline-warning">
-            <p>⚠️ Você está visualizando dados locais. Algumas informações podem estar desatualizadas.</p>
+            <p>⚠️ {erro}</p>
           </div>
         )}
 
         <div className="workout-plan">
           <div className="plan-header">
-            <h2 className="plan-title">{fichaTreino.nome}</h2>
-            <span className="plan-objective">{fichaTreino.objetivo}</span>
+            <h2 className="plan-title">{fichaTreino.content?.nome || "Ficha de Treino"}</h2>
+            <span className="plan-objective">{fichaTreino.content?.objetivo || "Objetivo não definido"}</span>
           </div>
 
-          {fichaTreino.grupos.map((grupo, index) => (
-            <div className="exercise-group" key={index}>
-              <h3 className="group-title">🏋️ {grupo.nome}</h3>
-              {grupo.exercicios.map((ex, exIndex) => (
-                <div className="exercise-item" key={exIndex}>
-                  <div className="exercise-name">{ex.nome}</div>
-                  <div className="exercise-details">
-                    <div className="exercise-detail"><div className="detail-label">Séries</div><div className="detail-value">{ex.series}</div></div>
-                    <div className="exercise-detail"><div className="detail-label">Repetições</div><div className="detail-value">{ex.repeticoes}</div></div>
-                    <div className="exercise-detail"><div className="detail-label">Carga</div><div className="detail-value">{ex.carga}</div></div>
-                    <div className="exercise-detail"><div className="detail-label">Descanso</div><div className="detail-value">{ex.descanso}</div></div>
+          {fichaTreino.content?.grupos && fichaTreino.content.grupos.length > 0 ? (
+            fichaTreino.content.grupos.map((grupo, index) => (
+              <div className="exercise-group" key={index}>
+                <h3 className="group-title">🏋️ {grupo.nome}</h3>
+                {grupo.exercicios && grupo.exercicios.map((ex, exIndex) => (
+                  <div className="exercise-item" key={exIndex}>
+                    <div className="exercise-name">{ex.nome}</div>
+                    <div className="exercise-details">
+                      <div className="exercise-detail"><div className="detail-label">Séries</div><div className="detail-value">{ex.series}</div></div>
+                      <div className="exercise-detail"><div className="detail-label">Repetições</div><div className="detail-value">{ex.repeticoes}</div></div>
+                      <div className="exercise-detail"><div className="detail-label">Carga</div><div className="detail-value">{ex.carga}</div></div>
+                      <div className="exercise-detail"><div className="detail-label">Descanso</div><div className="detail-value">{ex.descanso}</div></div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            ))
+          ) : (
+            <div className="no-workout-plan">
+              <p>Nenhum exercício encontrado na ficha de treino.</p>
             </div>
-          ))}
+          )}
 
           <div className="trainer-notes">
             <h4 className="notes-title">🏃 Observações do Instrutor</h4>
-            <p>{fichaTreino.observacoes}</p>
+            <p>{fichaTreino.content?.observacoes || "Nenhuma observação disponível."}</p>
           </div>
         </div>
       </div>

@@ -1,0 +1,227 @@
+.professor-dashboard-container {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.professor-content {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.professor-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.professor-header h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.professor-header p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e3e3e3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  text-align: center;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.error-container p {
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.retry-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.retry-button:hover {
+  background-color: #2980b9;
+}
+
+.students-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.student-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid #e1e8ed;
+}
+
+.student-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.student-photo {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.student-photo img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #3498db;
+}
+
+.student-info h3 {
+  color: #2c3e50;
+  font-size: 1.3rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.student-email {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.student-cpf {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin: 0 0 1rem 0;
+}
+
+.membership-status {
+  margin-bottom: 1.5rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.ativo {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge.inativo {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.membership-date {
+  color: #7f8c8d;
+  font-size: 0.8rem;
+  margin: 0.5rem 0 0 0;
+}
+
+.student-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.action-button {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.action-button.primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.action-button.primary:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+.action-button.secondary {
+  background-color: #ecf0f1;
+  color: #2c3e50;
+  border: 1px solid #bdc3c7;
+}
+
+.action-button.secondary:hover {
+  background-color: #d5dbdb;
+  transform: translateY(-1px);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem;
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .professor-content {
+    padding: 1rem;
+  }
+  
+  .professor-header h1 {
+    font-size: 2rem;
+  }
+  
+  .students-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .student-card {
+    padding: 1rem;
+  }
+} 

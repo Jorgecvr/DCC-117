@@ -78,6 +78,17 @@ export const userService = {
     }
   },
 
+  // Buscar perfil completo do aluno
+  async getStudentProfile() {
+    try {
+      const response = await api.get('/users/students/profile');
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar perfil do aluno:', error);
+      throw error;
+    }
+  },
+
   // Atualizar perfil do usuário atual
   async updateCurrentUserProfile(profileData) {
     try {
@@ -119,6 +130,90 @@ export const userService = {
       return users.filter(user => user.roles.includes('STUDENT'));
     } catch (error) {
       console.error('Erro ao buscar alunos:', error);
+      throw error;
+    }
+  },
+
+  // Buscar ficha de treino do aluno
+  async getStudentWorkoutPlan(studentId) {
+    try {
+      const response = await api.get(`/workout-plan/students/${studentId}/workout-plans`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar ficha de treino:', error);
+      throw error;
+    }
+  },
+
+  // Buscar lista de alunos (para recepcionistas e professores)
+  async getStudentsList() {
+    try {
+      const response = await api.get('/users/students');
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar lista de alunos:', error);
+      throw error;
+    }
+  },
+
+  // Salvar ficha de treino do aluno
+  async saveStudentWorkoutPlan(studentId, workoutPlanData) {
+    try {
+      console.log('userService.saveStudentWorkoutPlan - Iniciando...');
+      console.log('Student ID:', studentId);
+      console.log('Workout Plan Data:', workoutPlanData);
+      
+      const response = await api.put(`/workout-plan/students/${studentId}/workout-plans`, workoutPlanData);
+      
+      console.log('userService.saveStudentWorkoutPlan - Resposta:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('userService.saveStudentWorkoutPlan - Erro:', error);
+      console.error('userService.saveStudentWorkoutPlan - Response:', error.response);
+      throw error;
+    }
+  },
+
+  // Buscar avaliações físicas de um aluno
+  async getStudentPhysicalAssessments(studentId) {
+    try {
+      const response = await api.get(`/physical-assessment/students/${studentId}/assessments`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar avaliações físicas:', error);
+      throw error;
+    }
+  },
+
+  // Criar nova avaliação física
+  async createPhysicalAssessment(studentId, assessmentData) {
+    try {
+      const response = await api.post(`/physical-assessment/students/${studentId}/assessments`, assessmentData);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao criar avaliação física:', error);
+      throw error;
+    }
+  },
+
+  // Atualizar avaliação física existente
+  async updatePhysicalAssessment(assessmentId, assessmentData) {
+    try {
+      const response = await api.put(`/physical-assessment/assessments/${assessmentId}`, assessmentData);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao atualizar avaliação física:', error);
+      throw error;
+    }
+  },
+
+  // Criar nova matrícula para um aluno
+  async createStudentMembership(studentId, membershipData) {
+    try {
+      const response = await api.post(`/membership/students/${studentId}/memberships`, membershipData);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao criar matrícula:', error);
       throw error;
     }
   }
