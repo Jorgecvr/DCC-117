@@ -12,6 +12,26 @@ export const userService = {
     }
   },
 
+  async getAllEmployees() {
+    try {
+      const response = await api.get('/users/employees');
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar usuários:', error);
+      throw error;
+    }
+  },
+
+  async getAllStudents() {
+    try {
+      const response = await api.get('/users/students');
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar usuários:', error);
+      throw error;
+    }
+  },
+
   // Buscar usuário por ID
   async getUserById(id) {
     try {
@@ -100,13 +120,12 @@ export const userService = {
     }
   },
 
-  // Funções auxiliares para filtrar usuários
+
   async getEmployees() {
     try {
-      const users = await this.getAllUsers();
-      return users.filter(user => user.roles.some(role => 
-        ['ADMIN', 'RECEPTIONIST', 'TEACHER', 'TRAINEE'].includes(role)
-      ));
+      const users = await this.getAllEmployees();
+      return users;
+
     } catch (error) {
       console.error('Erro ao buscar funcionários:', error);
       throw error;
@@ -115,8 +134,8 @@ export const userService = {
 
   async getStudents() {
     try {
-      const users = await this.getAllUsers();
-      return users.filter(user => user.roles.includes('STUDENT'));
+      const users = await this.getAllStudents();
+      return users;
     } catch (error) {
       console.error('Erro ao buscar alunos:', error);
       throw error;

@@ -27,6 +27,7 @@ const AdminDashboard = () => {
       setError('');
       
       if (activeTab === 'funcionarios') {
+
         const employees = await userService.getEmployees();
         setFuncionarios(employees);
       } else {
