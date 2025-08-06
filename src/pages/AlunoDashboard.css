@@ -1,0 +1,357 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilos gerais */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-y: auto;
+}
+
+/* Seção do Perfil */
+.profile-section {
+  width: 550px;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: white;
+  padding: 2rem;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #ecf0f1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  border: 4px solid #3498db;
+}
+
+.user-icon {
+  font-size: 60px;
+  color: #7f8c8d;
+}
+
+.user-name {
+  margin: 0;
+  color: #ecf0f1;
+  font-size: 1.8rem;
+}
+
+.user-title {
+  margin: 0.5rem 0 0;
+  color: #bdc3c7;
+  font-size: 1rem;
+}
+
+.stats-container {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.stat-label {
+  color: #bdc3c7;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-value {
+  color: white;
+  font-weight: bold;
+}
+
+.section-title {
+  color: #ecf0f1;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.membership-info {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.membership-status {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background-color: #3498db;
+  border-radius: 4px;
+}
+
+/* Seção da Ficha de Treino */
+.workout-section {
+  flex: 1;
+  padding: 2rem;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.workout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.workout-title {
+  color: #2c3e50;
+  margin: 0;
+  font-size: 2rem;
+}
+
+.workout-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #7f8c8d;
+}
+
+.workout-plan {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.plan-title {
+  color: #2c3e50;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.plan-objective {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.exercise-group {
+  margin-bottom: 1.5rem;
+}
+
+.exercise-group:last-child {
+  margin-bottom: 0;
+}
+
+.group-title {
+  color: #3498db;
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.exercise-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+}
+
+.exercise-item:last-child {
+  margin-bottom: 0;
+}
+
+.exercise-name {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.exercise-details {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.exercise-detail {
+  text-align: center;
+}
+
+.detail-label {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  margin-bottom: 0.3rem;
+}
+
+.detail-value {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.trainer-notes {
+  background-color: #fff8e1;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  border-left: 4px solid #ffc107;
+}
+
+.notes-title {
+  margin: 0 0 0.5rem 0;
+  color: #ff8f00;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Barra de rolagem personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #f5f7fa;
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading-spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  color: #2c3e50;
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.error-container h3 {
+  margin-bottom: 0.5rem;
+  color: #e74c3c;
+}
+
+.error-container p {
+  margin-bottom: 1.5rem;
+  max-width: 500px;
+  line-height: 1.5;
+}
+
+.retry-button {
+  padding: 0.8rem 1.5rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.retry-button:hover {
+  background-color: #2980b9;
+}

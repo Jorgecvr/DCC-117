@@ -1,0 +1,208 @@
+.professor-dashboard-container {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.professor-content {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 80px); /* Ajusta para o header */
+}
+
+.professor-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.professor-header h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.professor-header p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e3e3e3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  text-align: center;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.error-container p {
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.retry-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.retry-button:hover {
+  background-color: #2980b9;
+}
+
+/* Tabela do Professor */
+.professor-table-container {
+  overflow-x: auto;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 1rem;
+}
+
+.professor-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.professor-table th,
+.professor-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid #e1e5eb;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+.professor-table thead {
+  background-color: #34495e;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.professor-table tbody tr:hover {
+  background-color: #f9fafd;
+}
+
+.student-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e1e5eb;
+}
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 18px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+.status-badge.ativo {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge.inativo {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.action-button {
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-right: 6px;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+}
+
+.action-button.edit {
+  background-color: #3498db;
+  color: white;
+}
+
+.action-button.edit:hover {
+  background-color: #2980b9;
+}
+
+.action-button.view {
+  background-color: #f39c12;
+  color: white;
+}
+
+.action-button.view:hover {
+  background-color: #e67e22;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem;
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .professor-content {
+    padding: 1rem;
+  }
+  
+  .professor-header h1 {
+    font-size: 2rem;
+  }
+  
+  .professor-table-container {
+    padding: 0.5rem;
+  }
+  
+  .professor-table th,
+  .professor-table td {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+  
+  .action-button {
+    padding: 5px 8px;
+    font-size: 0.8rem;
+    margin-right: 4px;
+  }
+} 
