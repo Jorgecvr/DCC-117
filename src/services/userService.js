@@ -1,4 +1,16 @@
 import api from './api';
+import { mockData, simulateApiDelay, simulateApiError } from './mockData';
+
+// Função para verificar se o backend está disponível
+const isBackendAvailable = async () => {
+  try {
+    await api.get('/health');
+    return true;
+  } catch (error) {
+    console.log('Backend não disponível, usando dados mockados');
+    return false;
+  }
+};
 
 export const userService = {
   // Buscar todos os usuários (apenas admin)
@@ -8,7 +20,9 @@ export const userService = {
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
-      throw error;
+      // Retorna dados mockados se backend não disponível
+      await simulateApiDelay();
+      return [...mockData.employees, ...mockData.students];
     }
   },
 
@@ -17,8 +31,9 @@ export const userService = {
       const response = await api.get('/users/employees');
       return response.data;
     } catch (error) {
-      console.error('Erro ao buscar usuários:', error);
-      throw error;
+      console.error('Erro ao buscar funcionários:', error);
+      await simulateApiDelay();
+      return mockData.employees;
     }
   },
 
@@ -27,8 +42,9 @@ export const userService = {
       const response = await api.get('/users/students');
       return response.data;
     } catch (error) {
-      console.error('Erro ao buscar usuários:', error);
-      throw error;
+      console.error('Erro ao buscar alunos:', error);
+      await simulateApiDelay();
+      return mockData.students;
     }
   },
 
@@ -39,7 +55,10 @@ export const userService = {
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar usuário:', error);
-      throw error;
+      await simulateApiDelay();
+      // Busca nos dados mockados
+      const allUsers = [...mockData.employees, ...mockData.students];
+      return allUsers.find(user => user.id == id) || null;
     }
   },
 
@@ -105,7 +124,8 @@ export const userService = {
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar perfil do aluno:', error);
-      throw error;
+      await simulateApiDelay();
+      return mockData.studentProfile;
     }
   },
 
@@ -131,15 +151,14 @@ export const userService = {
     }
   },
 
-
   async getEmployees() {
     try {
       const users = await this.getAllEmployees();
       return users;
-
     } catch (error) {
       console.error('Erro ao buscar funcionários:', error);
-      throw error;
+      await simulateApiDelay();
+      return mockData.employees;
     }
   },
 
@@ -149,7 +168,8 @@ export const userService = {
       return users;
     } catch (error) {
       console.error('Erro ao buscar alunos:', error);
-      throw error;
+      await simulateApiDelay();
+      return mockData.students;
     }
   },
 
@@ -160,7 +180,18 @@ export const userService = {
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar ficha de treino:', error);
-      throw error;
+      await simulateApiDelay();
+      // Busca nos dados mockados
+      const workoutPlan = mockData.workoutPlans.find(plan => plan.studentId == studentId);
+      return workoutPlan || {
+        content: {
+          nome: "Nenhuma ficha de treino encontrada",
+          objetivo: "Aguardando criação pelo instrutor",
+          validoAte: "Não definido",
+          observacoes: "Entre em contato com seu instrutor para criar uma ficha de treino personalizada.",
+          grupos: []
+        }
+      };
     }
   },
 
@@ -171,7 +202,8 @@ export const userService = {
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar lista de alunos:', error);
-      throw error;
+      await simulateApiDelay();
+      return mockData.students;
     }
   },
 
@@ -200,7 +232,9 @@ export const userService = {
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar avaliações físicas:', error);
-      throw error;
+      await simulateApiDelay();
+      // Busca nos dados mockados
+      return mockData.physicalAssessments.filter(assessment => assessment.studentId == studentId);
     }
   },
 

@@ -12,7 +12,7 @@ const ProfessorDashboard = () => {
 
   // Dados do professor (serão obtidos do token/contexto)
   const professor = {
-    nome: "Arthur Busquet",
+    nome: "Professor",
     foto: "https://randomuser.me/api/portraits/men/44.jpg"
   };
 
@@ -51,6 +51,11 @@ const ProfessorDashboard = () => {
     });
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('pt-BR');
+  };
+
   return (
     <div className="professor-dashboard-container">
       <HeaderProfessor professorNome={professor.nome} professorFoto={professor.foto} />
@@ -78,57 +83,66 @@ const ProfessorDashboard = () => {
         )}
 
         {!carregando && !erro && (
-          <div className="students-grid">
+          <div className="professor-table-container">
             {alunos.length === 0 ? (
               <div className="empty-state">
                 <p>Nenhum aluno encontrado.</p>
               </div>
             ) : (
-              alunos.map(aluno => (
-                <div key={aluno.id} className="student-card">
-                  <div className="student-photo">
-                    <img 
-                      src={aluno.photo || 'https://randomuser.me/api/portraits/lego/1.jpg'} 
-                      alt={aluno.name}
-                      onError={(e) => {
-                        e.target.src = 'https://randomuser.me/api/portraits/lego/1.jpg';
-                      }}
-                    />
-                  </div>
-                  
-                  <div className="student-info">
-                    <h3>{aluno.name}</h3>
-                    <p className="student-email">{aluno.email}</p>
-                    <p className="student-cpf">CPF: {aluno.cpf}</p>
-                    
-                    <div className="membership-status">
-                      <span className={`status-badge ${aluno.activeMembership ? 'ativo' : 'inativo'}`}>
-                        {aluno.activeMembership ? 'Mensalidade Ativa' : 'Mensalidade Inativa'}
-                      </span>
-                      {aluno.activeMembership && (
-                        <p className="membership-date">
-                          Desde: {new Date(aluno.activeMembership.startDate).toLocaleDateString('pt-BR')}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="student-actions">
-                    <button 
-                      className="action-button primary"
-                      onClick={() => handleSelectAluno(aluno)}
-                    >
-                      Editar Treino
-                    </button>
-                    <button 
-                      className="action-button secondary"
-                      onClick={() => handleViewAssessment(aluno)}
-                    >
-                      Ver Avaliação
-                    </button>
-                  </div>
-                </div>
-              ))
+              <table className="professor-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Foto</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>CPF</th>
+                    <th>Mensalidade</th>
+                    <th>Data de Cadastro</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {alunos.map(aluno => (
+                    <tr key={aluno.id}>
+                      <td>{aluno.id}</td>
+                      <td>
+                        <img 
+                          src={aluno.photo || 'https://randomuser.me/api/portraits/lego/1.jpg'} 
+                          alt={aluno.name}
+                          className="student-avatar"
+                          onError={(e) => {
+                            e.target.src = 'https://randomuser.me/api/portraits/lego/1.jpg';
+                          }}
+                        />
+                      </td>
+                      <td>{aluno.name}</td>
+                      <td>{aluno.email}</td>
+                      <td>{aluno.cpf}</td>
+                      <td>
+                        <span className={`status-badge ${aluno.activeMembership ? 'ativo' : 'inativo'}`}>
+                          {aluno.activeMembership ? 'Ativa' : 'Inativa'}
+                        </span>
+                      </td>
+                      <td>{formatDate(aluno.createdAt)}</td>
+                      <td>
+                        <button 
+                          className="action-button edit"
+                          onClick={() => handleSelectAluno(aluno)}
+                        >
+                          Editar Treino
+                        </button>
+                        <button 
+                          className="action-button view"
+                          onClick={() => handleViewAssessment(aluno)}
+                        >
+                          Ver Avaliação
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </div>
         )}

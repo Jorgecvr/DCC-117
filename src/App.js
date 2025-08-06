@@ -8,6 +8,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import RecepcionistaDashboard from './pages/RecepcionistaDashboard';
 import ProfessorDashboard from './pages/ProfessorDashboard';
 import ProfessorWorkoutEditor from './pages/ProfessorWorkoutEditor';
+import PhysicalAssessment from './pages/PhysicalAssessment';
 
 import ProtectedRoute from './pages/ProtectedRoute'; // 👈 novo import
 
@@ -56,6 +57,14 @@ function App() {
           element={
             <ProtectedRoute allowedRole="professor">
               <ProfessorWorkoutEditor />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/professor/avaliacao/:id"
+          element={
+            <ProtectedRoute allowedRole="professor">
+              <PhysicalAssessment />
             </ProtectedRoute>
           }
         />

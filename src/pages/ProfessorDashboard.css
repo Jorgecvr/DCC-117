@@ -1,12 +1,15 @@
 .professor-dashboard-container {
   min-height: 100vh;
   background-color: #f5f7fa;
+  overflow-y: auto;
+  height: 100vh;
 }
 
 .professor-content {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  min-height: calc(100vh - 80px); /* Ajusta para o header */
 }
 
 .professor-header {
@@ -78,70 +81,57 @@
   background-color: #2980b9;
 }
 
-.students-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
-}
-
-.student-card {
+/* Tabela do Professor */
+.professor-table-container {
+  overflow-x: auto;
   background-color: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
-  border: 1px solid #e1e8ed;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 1rem;
 }
 
-.student-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+.professor-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.student-photo {
-  text-align: center;
-  margin-bottom: 1rem;
+.professor-table th,
+.professor-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid #e1e5eb;
+  font-size: 0.95rem;
+  vertical-align: middle;
 }
 
-.student-photo img {
-  width: 80px;
-  height: 80px;
+.professor-table thead {
+  background-color: #34495e;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.professor-table tbody tr:hover {
+  background-color: #f9fafd;
+}
+
+.student-avatar {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #3498db;
-}
-
-.student-info h3 {
-  color: #2c3e50;
-  font-size: 1.3rem;
-  margin: 0 0 0.5rem 0;
-  font-weight: 600;
-}
-
-.student-email {
-  color: #7f8c8d;
-  font-size: 0.9rem;
-  margin: 0 0 0.25rem 0;
-}
-
-.student-cpf {
-  color: #7f8c8d;
-  font-size: 0.9rem;
-  margin: 0 0 1rem 0;
-}
-
-.membership-status {
-  margin-bottom: 1.5rem;
+  border: 2px solid #e1e5eb;
 }
 
 .status-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  padding: 5px 12px;
+  border-radius: 18px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  text-transform: capitalize;
 }
 
 .status-badge.ativo {
@@ -154,49 +144,33 @@
   color: #721c24;
 }
 
-.membership-date {
-  color: #7f8c8d;
-  font-size: 0.8rem;
-  margin: 0.5rem 0 0 0;
-}
-
-.student-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
 .action-button {
-  padding: 0.75rem 1rem;
   border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-right: 6px;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
 }
 
-.action-button.primary {
+.action-button.edit {
   background-color: #3498db;
   color: white;
 }
 
-.action-button.primary:hover {
+.action-button.edit:hover {
   background-color: #2980b9;
-  transform: translateY(-1px);
 }
 
-.action-button.secondary {
-  background-color: #ecf0f1;
-  color: #2c3e50;
-  border: 1px solid #bdc3c7;
+.action-button.view {
+  background-color: #f39c12;
+  color: white;
 }
 
-.action-button.secondary:hover {
-  background-color: #d5dbdb;
-  transform: translateY(-1px);
+.action-button.view:hover {
+  background-color: #e67e22;
 }
 
 .empty-state {
@@ -216,12 +190,19 @@
     font-size: 2rem;
   }
   
-  .students-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+  .professor-table-container {
+    padding: 0.5rem;
   }
   
-  .student-card {
-    padding: 1rem;
+  .professor-table th,
+  .professor-table td {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+  
+  .action-button {
+    padding: 5px 8px;
+    font-size: 0.8rem;
+    margin-right: 4px;
   }
 } 

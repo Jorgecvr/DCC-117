@@ -19,10 +19,10 @@ const HeaderProfessor = ({ professorNome, professorFoto }) => {
       
       <div className="header-right">
         <div className="user-info">
-          <span className="user-name">{professorNome}</span>
+          <span className="user-name">Professor</span>
           <img 
             src={professorFoto || 'https://randomuser.me/api/portraits/men/32.jpg'} 
-            alt={professorNome} 
+            alt="Professor" 
             className="user-avatar"
           />
         </div>
