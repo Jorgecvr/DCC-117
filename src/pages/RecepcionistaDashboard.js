@@ -3,6 +3,16 @@ import { userService } from '../services/userService';
 import './RecepcionistaDashboard.css';
 
 const RecepcionistaDashboard = () => {
+  // Função para formatar o tipo de plano
+  const formatarTipoPlano = (tipo) => {
+    const tipos = {
+      'MONTHLY': 'Mensal',
+      'QUARTERLY': 'Trimestral',
+      'SEMESTERLY': 'Semestral',
+      'ANNUAL': 'Anual'
+    };
+    return tipos[tipo] || tipo || 'Sem plano';
+  };
   const [alunos, setAlunos] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState({ nome: '', email: '', cpf: '', plano: '', vencimento: '', status: 'Ativo' });
@@ -22,6 +32,10 @@ const RecepcionistaDashboard = () => {
       console.log('Buscando lista de alunos...');
       const data = await userService.getStudentsList();
       console.log('Dados dos alunos recebidos:', data);
+      console.log('Primeiro aluno (exemplo):', data[0]);
+      if (data[0]) {
+        console.log('activeMembership do primeiro aluno:', data[0].activeMembership);
+      }
       setAlunos(data);
     } catch (err) {
       console.error('Erro ao carregar alunos:', err);
@@ -44,23 +58,63 @@ const RecepcionistaDashboard = () => {
       return;
     }
 
+    if (!modalData.plano) {
+      alert('Plano é obrigatório!');
+      return;
+    }
+
     try {
       if (modalData.id) {
         // Atualizar aluno existente
-        await userService.updateUser(modalData.id, {
+        // Buscar dados do aluno para obter startDate da membership existente
+        const alunoAtual = alunos.find(a => a.id === modalData.id);
+        const membershipAtual = alunoAtual?.activeMembership;
+        
+        const membershipData = {
+          type: modalData.plano,
+          status: modalData.status === "Ativo" ? "ACTIVE" : "CANCELLED"
+        };
+        
+        // Incluir startDate se existir, senão usar data atual
+        if (membershipAtual?.startDate) {
+          membershipData.startDate = new Date(membershipAtual.startDate).toISOString();
+        } else {
+          membershipData.startDate = new Date().toISOString();
+        }
+        
+        // Incluir endDate se fornecido
+        if (modalData.vencimento) {
+          membershipData.endDate = new Date(modalData.vencimento).toISOString();
+        }
+
+        const updateData = {
           name: modalData.nome,
           email: modalData.email,
-          cpf: modalData.cpf
-        });
+          cpf: modalData.cpf,
+          membership: membershipData
+        };
+
+        await userService.updateUser(modalData.id, updateData);
         alert('Aluno atualizado com sucesso!');
       } else {
         // Criar novo aluno
+        const membershipData = {
+          type: modalData.plano,
+          startDate: new Date().toISOString(),
+          status: modalData.status === "Ativo" ? "ACTIVE" : "CANCELLED"
+        };
+        
+        if (modalData.vencimento) {
+          membershipData.endDate = new Date(modalData.vencimento).toISOString();
+        }
+
         await userService.createUser({
           name: modalData.nome,
           email: modalData.email,
           cpf: modalData.cpf,
-          password: '654321', // Senha padrão
-          isStudent: true
+          password: '654321',
+          isStudent: true,
+          membership: membershipData
         });
         alert('Aluno criado com sucesso!');
       }
@@ -87,12 +141,17 @@ const RecepcionistaDashboard = () => {
   };
 
   const handleEdit = (aluno) => {
+    const membership = aluno.activeMembership;
     setModalData({
       id: aluno.id,
       nome: aluno.name,
       email: aluno.email,
       cpf: aluno.cpf,
-      plano: aluno.activeMembership ? aluno.activeMembership.type : ''
+      plano: membership ? membership.type : '',
+      vencimento: membership && membership.endDate 
+        ? new Date(membership.endDate).toISOString().split('T')[0] 
+        : '',
+      status: membership && membership.status === 'ACTIVE' ? 'Ativo' : 'Inativo'
     });
     setModalOpen(true);
   };
@@ -143,16 +202,19 @@ const RecepcionistaDashboard = () => {
                     <td>{aluno.name}</td>
                     <td>{aluno.email}</td>
                     <td>{aluno.cpf}</td>
-                    <td>{aluno.activeMembership ? aluno.activeMembership.type : 'Sem plano'}</td>
                     <td>
-                      {aluno.activeMembership 
-                        ? new Date(aluno.activeMembership.startDate).toLocaleDateString('pt-BR')
-                        : 'N/A'
-                      }
+                      {aluno.activeMembership && aluno.activeMembership.type 
+                        ? formatarTipoPlano(aluno.activeMembership.type) 
+                        : 'Sem plano'}
                     </td>
                     <td>
-                      <span className={`status-badge ${aluno.activeMembership ? 'ativo' : 'inativo'}`}>
-                        {aluno.activeMembership ? 'Ativo' : 'Inativo'}
+                      {aluno.activeMembership && aluno.activeMembership.startDate
+                        ? new Date(aluno.activeMembership.startDate).toLocaleDateString('pt-BR')
+                        : 'N/A'}
+                    </td>
+                    <td>
+                      <span className={`status-badge ${aluno.activeMembership && aluno.activeMembership.status === 'ACTIVE' ? 'ativo' : 'inativo'}`}>
+                        {aluno.activeMembership && aluno.activeMembership.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                       </span>
                     </td>
                     <td>
@@ -216,11 +278,16 @@ const RecepcionistaDashboard = () => {
 
                 <div className="form-group">
                   <label>Plano</label>
-                  <input
-                    type="text"
+                  <select
                     value={modalData.plano}
                     onChange={(e) => setModalData({ ...modalData, plano: e.target.value })}
-                  />
+                  >
+                    <option value="">Selecione um plano</option>
+                    <option value="MONTHLY">Mensal</option>
+                    <option value="QUARTERLY">Trimestral</option>
+                    <option value="SEMESTERLY">Semestral</option>
+                    <option value="ANNUAL">Anual</option>
+                  </select>
                 </div>
 
                 <div className="form-group">

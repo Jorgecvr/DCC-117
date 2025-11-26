@@ -74,15 +74,27 @@ export const userService = {
   },
 
   // Atualizar usuário
-  async updateUser(id, userData) {
-    try {
-      const response = await api.put(`/users/${id}`, userData);
-      return response.data;
-    } catch (error) {
-      console.error('Erro ao atualizar usuário:', error);
-      throw error;
-    }
-  },
+async updateUser(id, userData) {
+  try {
+    const token = localStorage.getItem('token');
+
+    const response = await api.put(
+      `/users/${id}`,
+      userData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error);
+    throw error;
+  }
+},
+
 
   // Deletar usuário
   async deleteUser(id) {
